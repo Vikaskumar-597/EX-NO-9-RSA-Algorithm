@@ -36,12 +36,83 @@ Step 5: **Security Foundation
 The security of RSA relies on the difficulty of factoring large numbers; thus, choosing sufficiently large prime numbers for \( p \) and \( q \) is crucial for security.
 
 ## Program:
+```
+#include <stdio.h>
 
+// Function to compute GCD
+int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
 
+// Function to compute modular exponentiation
+int mod_exp(int base, int exp, int mod) {
+    int result = 1;
+    base = base % mod;
+    while (exp > 0) {
+        if (exp % 2 == 1)
+            result = (result * base) % mod;
+        exp = exp / 2;
+        base = (base * base) % mod;
+    }
+    return result;
+}
 
+// Function to find multiplicative inverse of e mod phi
+int mod_inverse(int e, int phi) {
+    int d = 1;
+    while ((d * e) % phi != 1) {
+        d++;
+    }
+    return d;
+}
 
+int main() {
+    int p, q, e;
+    printf("Enter two prime numbers (p and q): ");
+    scanf("%d %d", &p, &q);
+
+    int n = p * q;
+    int phi = (p - 1) * (q - 1);
+
+    // User inputs e
+    printf("Enter value of e (1 < e < %d) such that gcd(e, %d) = 1: ", phi, phi);
+    scanf("%d", &e);
+
+    if (gcd(e, phi) != 1) {
+        printf("Invalid e! It must be coprime with %d.\n", phi);
+        return 1;
+    }
+
+    // Compute d
+    int d = mod_inverse(e, phi);
+
+    printf("Public Key: (e=%d, n=%d)\n", e, n);
+    printf("Private Key: (d=%d, n=%d)\n", d, n);
+
+    // Encryption
+    int msg;
+    printf("Enter message (as an integer < %d): ", n);
+    scanf("%d", &msg);
+
+    int cipher = mod_exp(msg, e, n);
+    printf("Encrypted message: %d\n", cipher);
+
+    // Decryption
+    int decrypted = mod_exp(cipher, d, n);
+    printf("Decrypted message: %d\n", decrypted);
+
+    return 0;
+}
+
+```
 ## Output:
 
+<img width="844" height="291" alt="image" src="https://github.com/user-attachments/assets/70d6b4ae-31ac-41e1-a04d-df3f5b4d4749" />
 
 
 ## Result:
